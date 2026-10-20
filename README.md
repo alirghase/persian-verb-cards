@@ -52,9 +52,30 @@ present-tense table using the regular pattern, labelled so irregular verbs can b
 
 ## Where your data lives
 
-Your added verbs and progress are saved in the browser's local storage only. Clearing site
-data deletes them. **Export backup** downloads them as a JSON file, and **Import backup**
-merges a file back in, which is also how to move them to another device.
+The browser's local storage is the working copy, so the cards open straight away, offline
+or not.
+
+**Signed in** (email and password, the same account as
+[Farsi Sentence Vault](https://github.com/alirghase/farsi-sentence-vault)), every change also
+goes up to Supabase and comes down on your other devices: a card you added or deleted,
+a verb marked known, one pronoun's form marked known. Each is a row stamped with when you
+made the change, and the newest change wins, so two devices that were both offline merge
+thing by thing. Progress from before you signed in is dated 0 and only fills gaps in the
+account. Row-level security means each account can only read and write its own rows. The key
+in `index.html` is Supabase's publishable key, which is public by design.
+
+**Signed out**, everything stays in that browser only, and clearing site data deletes it.
+**Export backup** downloads it all as a JSON file, and **Import backup** merges one back in.
+
+### The table
+
+`supabase/schema.sql` creates `public.verb_card_rows` in the `farsi-vault` Supabase project.
+That project's migrations live in the farsi-sentence-vault repo, so this table is applied on
+its own, without touching their history:
+
+```sh
+supabase db query --linked -f supabase/schema.sql   # run from a folder linked to farsi-vault
+```
 
 ## Running it
 

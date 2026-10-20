@@ -45,6 +45,7 @@
   --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 10px 30px rgb(0 0 0 / .35); color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -114,6 +115,15 @@ h1 .fa { font-weight: 800; font-size: .8em; margin-inline-start: 8px; }
 .backup { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .backup p { flex: 1 1 260px; margin: 0; font-size: .85rem; color: var(--muted); }
 footer { font-size: .85rem; color: var(--muted); }
+.account-wrap { display: flex; flex-direction: column; gap: 10px; }
+.account { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: .88rem; color: var(--muted); background: var(--surface); border-radius: 12px; padding: 8px 8px 8px 14px; box-shadow: var(--shadow); }
+.account .who { color: var(--fg); font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.account .status { flex: 1 1 180px; min-width: 0; }
+.acct-btns { display: flex; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--saffron); flex: none; }
+.dot[data-s="ok"] { background: var(--firoozeh); }
+.dot[data-s="warn"] { background: var(--danger); }
+.signin-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 footer a { color: var(--firoozeh); }
 .cell.hi { background: var(--firoozeh-soft); box-shadow: inset 0 0 0 2px var(--firoozeh); }
 .pron { display: flex; flex-direction: column; align-items: center; }
@@ -147,7 +157,7 @@ fieldset { border: 0; padding: 0; margin: 0; display: grid; grid-template-column
 legend { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 0; margin-bottom: 8px; }
 label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; font-weight: 500; min-width: 0; }
 label .opt { color: var(--muted); font-weight: 400; }
-input[type="text"], input[type="search"] { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 11px; font-size: 1rem; }
+input[type="text"], input[type="search"], input[type="email"], input[type="password"] { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 11px; font-size: 1rem; }
 input.fa-in { font-family: var(--f-fa); direction: rtl; font-size: 1.1rem; }
 fieldset .wide { grid-column: 1 / -1; }
 .form-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
@@ -192,6 +202,22 @@ fieldset .wide { grid-column: 1 / -1; }
     </div>
   </header>
 
+  <div class="account-wrap">
+    <div class="account" id="account" aria-live="polite"></div>
+    <form id="signInForm" hidden>
+      <p class="form-note">Use your Farsi Sentence Vault account, or create one. Your cards and progress then follow you to any device.</p>
+      <div class="signin-fields">
+        <label for="acct-email">Email<input type="email" id="acct-email" autocomplete="email" required></label>
+        <label for="acct-pass">Password<input type="password" id="acct-pass" autocomplete="current-password" minlength="8" required></label>
+      </div>
+      <div class="form-foot">
+        <button type="submit" class="primary" id="signInBtn">Sign in</button>
+        <button type="button" class="ghost" id="createBtn">Create account</button>
+        <span class="msg" id="acctMsg" role="status"></span>
+      </div>
+    </form>
+  </div>
+
   <div class="stage">
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Card type">
@@ -230,7 +256,6 @@ fieldset .wide { grid-column: 1 / -1; }
   <section aria-labelledby="add-h">
     <div class="section-head">
       <h2 id="add-h">Add a verb</h2>
-      <span class="sync" data-s="local">Saved in this browser</span>
     </div>
     <form id="addForm" autocomplete="off">
       <fieldset>
@@ -262,7 +287,7 @@ fieldset .wide { grid-column: 1 / -1; }
     </div>
     <div class="list" id="list"></div>
     <div class="backup">
-      <p>Your cards and progress are saved in this browser only. Clearing site data deletes them, so export a backup now and then. Import it on another device to carry on there.</p>
+      <p>Signed out, your cards and progress live in this browser only, and clearing site data deletes them. Sign in above to keep them online, or export a backup now and then.</p>
       <button class="ghost" id="exportBtn">Export backup</button>
       <button class="ghost" id="importBtn">Import backup</button>
       <input type="file" id="importIn" accept="application/json,.json" hidden>
@@ -345,6 +370,7 @@ const $ = (id) => document.getElementById(id);
 const LS = "pvc:";
 function lsGet(k, d) { try { const v = localStorage.getItem(LS + k); return v ? JSON.parse(v) : d; } catch { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); return true; } catch { return false; } }
+function lsDel(k) { try { localStorage.removeItem(LS + k); } catch {} }
 function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 const state = {
@@ -465,17 +491,271 @@ function renderList() {
 
 function render() { renderCard(); renderList(); }
 
-// ---- saving (this browser only) ----
+// ---- saving ----
+// Local storage is the working copy. Every change is also stamped with when it
+// happened and noted as pending; signed in, the notes go up to the account.
+const stamps = lsGet("stamps", null) || legacyStamps();
+const pending = new Set(lsGet("pending", []));
+function legacyStamps() {
+  // Progress from before syncing existed is dated 0, so it only fills gaps in an account.
+  const s = {};
+  for (const c of state.custom) s["card:" + c.id] = 0;
+  for (const id of state.known) s["known:" + id] = 0;
+  for (const k of state.conjKnown) s["form:" + k] = 0;
+  lsSet("stamps", s);
+  return s;
+}
+function savePending() { lsSet("stamps", stamps); lsSet("pending", [...pending]); }
+function touch(kind, key) {
+  const sk = kind + ":" + key;
+  stamps[sk] = Math.max(Date.now(), (stamps[sk] || 0) + 1);
+  pending.add(sk);
+  savePending();
+  pushSoon();
+}
 function saveKnown() { lsSet("known", [...state.known]); lsSet("conjKnown", [...state.conjKnown]); }
 const plain = (c) => { const { custom, ...rest } = c; return rest; };
 function saveCustom() { return lsSet("custom", state.custom.map(plain)); }
 function setKnown(id, on) {
   on ? state.known.add(id) : state.known.delete(id);
   saveKnown();
+  touch("known", id);
 }
 function setForm(id, i, on) {
   on ? state.conjKnown.add(conjKey(id, i)) : state.conjKnown.delete(conjKey(id, i));
   saveKnown();
+  touch("form", conjKey(id, i));
+}
+
+// ---- online account ----
+// The same Supabase project and accounts as Farsi Sentence Vault, over plain
+// fetch: four auth calls and one table (supabase/schema.sql). The key is the
+// publishable one, public by design: the table's row rules, not the key, keep
+// each account's rows its own.
+const SUPABASE_URL = "https://ejknogfciwlvxvvrntka.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jgX7irihQ2sB6Onc8kQmlQ_LWq9F_mD"; // public by design; see above. gitleaks:allow
+const TABLE = `${SUPABASE_URL}/rest/v1/verb_card_rows`;
+const PAGE = 1000;
+
+const sync = { account: lsGet("account", null), busy: false, again: false, error: null, at: lsGet("syncedAt", null), timer: null, refreshing: null };
+
+function saveAccount(a) { sync.account = a; a ? lsSet("account", a) : lsDel("account"); }
+function fromSession(s) {
+  return {
+    email: s.user?.email ?? "",
+    userId: s.user?.id,
+    accessToken: s.access_token,
+    refreshToken: s.refresh_token,
+    expiresAt: s.expires_at ?? Math.floor(Date.now() / 1000) + (s.expires_in ?? 3600),
+  };
+}
+
+async function authCall(path, body) {
+  let r;
+  try {
+    r = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error("offline");
+  }
+  const data = await r.json().catch(() => ({}));
+  if (r.ok) return data;
+  if (r.status === 429) throw new Error("tooMany");
+  const code = data.error_code ?? data.code;
+  if (code === "user_already_exists") throw new Error("exists");
+  if (code === "weak_password") throw new Error("weak");
+  if (code === "invalid_credentials" || r.status === 400) throw new Error("invalid");
+  throw new Error(r.status >= 500 ? "offline" : "invalid");
+}
+
+// A token good for the next minute. The account is read back from storage
+// before refreshing: another tab may have refreshed already, and Supabase
+// revokes the whole session when an old refresh token is reused.
+async function token() {
+  if (!sync.account) throw new Error("signedOut");
+  if (sync.account.expiresAt * 1000 - 60000 > Date.now()) return sync.account.accessToken;
+  sync.refreshing ??= (async () => {
+    const latest = lsGet("account", null);
+    if (!latest) throw new Error("signedOut");
+    if (latest.expiresAt * 1000 - 60000 > Date.now()) { sync.account = latest; return latest.accessToken; }
+    let s;
+    try {
+      s = await authCall("token?grant_type=refresh_token", { refresh_token: latest.refreshToken });
+    } catch (e) {
+      throw new Error(e.message === "offline" || e.message === "tooMany" ? "offline" : "signedOut");
+    }
+    saveAccount({ ...fromSession(s), email: latest.email });
+    return s.access_token;
+  })().finally(() => { sync.refreshing = null; });
+  return sync.refreshing;
+}
+
+async function rest(url, init = {}) {
+  const t = await token();
+  let r;
+  try {
+    r = await fetch(url, { ...init, headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${t}`, "Content-Type": "application/json", ...init.headers } });
+  } catch {
+    throw new Error("offline");
+  }
+  if (r.status === 401) throw new Error("signedOut");
+  if (r.status === 429 || r.status >= 500) throw new Error("offline");
+  // Anything else is the server refusing what this code sent: a bug, not the network.
+  if (!r.ok) throw new Error(`verb_card_rows ${r.status}: ${await r.text()}`);
+  return r;
+}
+
+// A pending note as the row it stands for now. A card that's gone goes up as null.
+function rowFor(sk) {
+  const at = sk.indexOf(":"), kind = sk.slice(0, at), key = sk.slice(at + 1);
+  let data;
+  if (kind === "card") { const c = state.custom.find(x => x.id === key); data = c ? plain(c) : null; }
+  else data = { on: (kind === "known" ? state.known : state.conjKnown).has(key) };
+  return { user_id: sync.account.userId, kind, key, data, saved_at: stamps[sk] ?? 0 };
+}
+
+async function push() {
+  const keys = [...pending];
+  for (let i = 0; i < keys.length; i += 500) {
+    const sent = keys.slice(i, i + 500).map(rowFor);
+    await rest(`${TABLE}?on_conflict=user_id,kind,key`, {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(sent),
+    });
+    // A change made while this was in flight has a newer stamp and stays pending.
+    for (const r of sent) if (stamps[r.kind + ":" + r.key] === r.saved_at) pending.delete(r.kind + ":" + r.key);
+    savePending();
+  }
+}
+
+// Fetch the whole account (a few hundred rows at most) and take every row newer
+// than this browser's copy. Returns how many rows changed something here.
+async function pull() {
+  const rows = [];
+  for (let offset = 0; ; offset += PAGE) {
+    const page = await (await rest(`${TABLE}?select=kind,key,data,saved_at&order=kind,key&limit=${PAGE}&offset=${offset}`)).json();
+    rows.push(...page);
+    if (page.length < PAGE) break;
+  }
+  const remote = new Map();
+  let changed = 0;
+  for (const r of rows) {
+    const sk = r.kind + ":" + r.key;
+    remote.set(sk, r.saved_at);
+    if (stamps[sk] !== undefined && r.saved_at <= stamps[sk]) continue;
+    stamps[sk] = r.saved_at;
+    pending.delete(sk);
+    changed++;
+    if (r.kind === "card") {
+      state.custom = state.custom.filter(c => c.id !== r.key);
+      if (r.data) state.custom.push({ ...r.data, id: r.key, custom: true });
+    } else {
+      const set = r.kind === "known" ? state.known : state.conjKnown;
+      r.data?.on ? set.add(r.key) : set.delete(r.key);
+    }
+  }
+  // Anything here the account doesn't have, or has an older version of, goes up.
+  for (const sk of Object.keys(stamps)) if (!remote.has(sk) || stamps[sk] > remote.get(sk)) pending.add(sk);
+  if (changed) {
+    state.custom.sort((a, b) => (a.created || 0) - (b.created || 0));
+    saveCustom();
+    saveKnown();
+  }
+  savePending();
+  return changed;
+}
+
+function pushSoon(delay = 2000) {
+  if (!sync.account) return;
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(() => runSync({ pull: false }), delay);
+}
+
+// Push, then pull, so what comes down already includes this browser's changes.
+// One at a time: a sync asked for while one runs happens straight after it.
+async function runSync({ pull: pulling = true } = {}) {
+  if (!sync.account) return;
+  if (sync.busy) { sync.again = true; return; }
+  sync.busy = true;
+  renderAccount();
+  try {
+    await push();
+    if (pulling) {
+      const changed = await pull();
+      if (pending.size) await push();
+      if (changed) render();
+    }
+    sync.error = null;
+    sync.at = Date.now();
+    lsSet("syncedAt", sync.at);
+  } catch (e) {
+    if (e.message !== "offline" && e.message !== "signedOut") console.error("sync failed", e);
+    sync.error = e.message === "signedOut" ? "signedOut" : "offline";
+    if (sync.error === "signedOut") forget();
+  }
+  sync.busy = false;
+  renderAccount();
+  if (sync.again) { sync.again = false; runSync(); }
+}
+
+function forget() {
+  clearTimeout(sync.timer);
+  saveAccount(null);
+  lsDel("syncedAt");
+  sync.at = null;
+}
+
+async function signIn(email, password, create) {
+  const s = await authCall(create ? "signup" : "token?grant_type=password", { email, password });
+  // Email confirmation is off for this project. If it's turned on, signup returns no session.
+  if (!s.access_token) throw new Error("confirm");
+  saveAccount(fromSession(s));
+  sync.error = null;
+  // Everything in this browser goes up; for each thing, the newest change wins.
+  for (const sk of Object.keys(stamps)) pending.add(sk);
+  savePending();
+  await runSync();
+}
+
+async function signOut() {
+  if (!sync.account) return;
+  try { await push(); } catch { /* offline: those changes stay in this browser */ }
+  const t = sync.account.accessToken;
+  fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: "POST", headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${t}` } }).catch(() => {});
+  forget();
+  renderAccount();
+}
+
+const ACCT_ERR = {
+  invalid: "That email and password don't match an account.",
+  exists: "There's already an account with that email. Sign in instead.",
+  weak: "Use a password of at least 8 characters.",
+  tooMany: "Too many tries. Wait a minute and try again.",
+  offline: "Couldn't reach the server. Check your connection and try again.",
+  confirm: "Check your email to confirm the account, then sign in.",
+};
+function ago(t) {
+  const s = (Date.now() - t) / 1000;
+  return s < 60 ? "just now" : s < 3600 ? `${Math.round(s / 60)} min ago` : s < 86400 ? `${Math.round(s / 3600)} h ago` : new Date(t).toLocaleDateString();
+}
+function renderAccount() {
+  const el = $("account");
+  if (sync.account) {
+    const status = sync.busy ? "Syncing…"
+      : sync.error === "offline" ? "Offline. Your changes are safe here and go up when you're back online."
+      : sync.at ? `Synced ${ago(sync.at)}` : "Not synced yet";
+    el.innerHTML = `<span class="dot" data-s="${sync.error ? "warn" : "ok"}"></span><span class="who">${esc(sync.account.email)}</span><span class="status">${status}</span>
+      <span class="acct-btns"><button class="ghost" id="syncNow">Sync now</button><button class="ghost" id="signOut">Sign out</button></span>`;
+  } else {
+    const open = !$("signInForm").hidden;
+    const status = sync.error === "signedOut" ? "You were signed out. Sign in again to keep syncing." : "Saved in this browser only.";
+    el.innerHTML = `<span class="dot"></span><span class="status">${status}</span>
+      <span class="acct-btns"><button class="ghost" id="openSignIn" aria-expanded="${open}">${open ? "Cancel" : "Sign in to sync"}</button></span>`;
+  }
 }
 
 // ---- interactions ----
@@ -527,9 +807,10 @@ $("list").addEventListener("click", e => {
   if (state.pendingDelete !== id) { state.pendingDelete = id; renderList(); return; }
   state.pendingDelete = null;
   state.custom = state.custom.filter(c => c.id !== id);
-  for (let i = 0; i < 6; i++) state.conjKnown.delete(conjKey(id, i));
-  setKnown(id, false);
+  for (let i = 0; i < 6; i++) if (state.conjKnown.has(conjKey(id, i))) setForm(id, i, false);
+  if (state.known.has(id)) setKnown(id, false);
   saveCustom();
+  touch("card", id);
   render();
 });
 
@@ -543,6 +824,7 @@ $("addForm").addEventListener("submit", e => {
   try {
     state.custom.push({ ...c, custom: true });
     if (!saveCustom()) { state.custom.pop(); throw new Error("storage"); }
+    touch("card", c.id);
     e.target.reset();
     msg.className = "msg"; msg.textContent = `Added “${c.en}”. It's in the deck now.`;
     render();
@@ -572,9 +854,9 @@ $("importIn").addEventListener("change", async e => {
     if (d.app !== "persian-verb-cards") throw new Error("not a backup");
     const ids = new Set(state.custom.map(c => c.id));
     let added = 0;
-    for (const c of d.custom || []) if (c?.id && c.en && c.fa && !ids.has(c.id)) { state.custom.push({ ...c, custom: true }); added++; }
-    for (const k of d.known || []) state.known.add(k);
-    for (const k of d.conjKnown || []) state.conjKnown.add(k);
+    for (const c of d.custom || []) if (c?.id && c.en && c.fa && !ids.has(c.id)) { state.custom.push({ ...c, custom: true }); touch("card", c.id); added++; }
+    for (const k of d.known || []) if (!state.known.has(k)) { state.known.add(k); touch("known", k); }
+    for (const k of d.conjKnown || []) if (!state.conjKnown.has(k)) { state.conjKnown.add(k); touch("form", k); }
     saveCustom(); saveKnown(); render();
     $("backupMsg").textContent = `Backup imported: ${added} new card${added === 1 ? "" : "s"}, progress merged.`;
   } catch {
@@ -583,7 +865,45 @@ $("importIn").addEventListener("change", async e => {
   e.target.value = "";
 });
 
+async function doSignIn(create) {
+  const form = $("signInForm"), msg = $("acctMsg");
+  if (!form.reportValidity()) return;
+  $("signInBtn").disabled = $("createBtn").disabled = true;
+  msg.className = "msg";
+  msg.textContent = create ? "Creating your account…" : "Signing in…";
+  try {
+    await signIn($("acct-email").value.trim(), $("acct-pass").value, create);
+    form.reset();
+    form.hidden = true;
+    msg.textContent = "";
+  } catch (e) {
+    msg.className = "msg err";
+    msg.textContent = ACCT_ERR[e.message] || ACCT_ERR.offline;
+  }
+  $("signInBtn").disabled = $("createBtn").disabled = false;
+  renderAccount();
+}
+$("signInForm").addEventListener("submit", e => { e.preventDefault(); doSignIn(false); });
+$("createBtn").addEventListener("click", () => doSignIn(true));
+$("account").addEventListener("click", e => {
+  if (e.target.closest("#openSignIn")) {
+    const f = $("signInForm");
+    f.hidden = !f.hidden;
+    renderAccount();
+    if (!f.hidden) $("acct-email").focus();
+  } else if (e.target.closest("#syncNow")) runSync();
+  else if (e.target.closest("#signOut")) signOut();
+});
+// Coming back: see what other devices did. Leaving: send this one's changes now.
+document.addEventListener("visibilitychange", () => {
+  if (!sync.account) return;
+  document.visibilityState === "visible" ? runSync() : pushSoon(0);
+});
+addEventListener("online", () => { if (sync.account) runSync(); });
+
 render();
+renderAccount();
+runSync();
 </script>
 </body>
 </html>
