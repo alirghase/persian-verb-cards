@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Persian Verb Cards</title>
+<meta name="description" content="Flashcards for 24 everyday Persian verbs in spoken Tehrani: present tense for every pronoun, a conjugation drill and an example sentence for each.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%230d7f80'%3E%3Crect x='4' y='4' width='12' height='12'/%3E%3Crect x='4' y='4' width='12' height='12' transform='rotate(45 10 10)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=Vazirmatn:wght@400;600;800&display=swap">
+<style>
+/* Layout: one study column. Card on top, controls under it, then the add form and the full list. */
+:root {
+  --bg: #edf1f0;
+  --surface: #ffffff;
+  --sunk: #e2e8e7;
+  --line: #c9d3d2;
+  --fg: #16233b;
+  --muted: #586678;
+  --lapis: #1f3c88;      /* Persian script */
+  --anaar: #b83a24;      /* transliteration, the sheet's red */
+  --firoozeh: #0d7f80;   /* accent */
+  --firoozeh-soft: #d4ecea;
+  --saffron: #b57d07;    /* known */
+  --saffron-soft: #f6e9c6;
+  --danger: #a3261a;
+  --shadow: 0 1px 2px rgb(22 35 59 / .06), 0 8px 24px rgb(22 35 59 / .08);
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-fa: "Vazirmatn", "Geeza Pro", "Noto Naskh Arabic", Tahoma, sans-serif;
+  color-scheme: light;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1424; --surface: #162036; --sunk: #1d2943; --line: #2c3a58; --fg: #e6edf1; --muted: #9aa8bb;
+  --lapis: #9db8ff; --anaar: #f08a72; --firoozeh: #45c6c2; --firoozeh-soft: #143a43;
+  --saffron: #efbb45; --saffron-soft: #3a3016; --danger: #ff8a7a;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 10px 30px rgb(0 0 0 / .35); color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0d1424; --surface: #162036; --sunk: #1d2943; --line: #2c3a58; --fg: #e6edf1; --muted: #9aa8bb;
+  --lapis: #9db8ff; --anaar: #f08a72; --firoozeh: #45c6c2; --firoozeh-soft: #143a43;
+  --saffron: #efbb45; --saffron-soft: #3a3016; --danger: #ff8a7a;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 10px 30px rgb(0 0 0 / .35); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 64px;
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.fa { font-family: var(--f-fa); direction: rtl; unicode-bidi: isolate; color: var(--lapis); }
+.tr { color: var(--anaar); font-weight: 600; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--firoozeh); outline-offset: 2px; }
+
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 20px; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: 1.9rem; line-height: 1.1; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h1 .fa { font-weight: 800; font-size: .8em; margin-inline-start: 8px; }
+.sub { margin: 4px 0 0; color: var(--muted); font-size: .92rem; }
+.meter { min-width: 0; flex: 1 1 200px; max-width: 260px; display: flex; flex-direction: column; gap: 6px; }
+.meter-label { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.meter-label b { color: var(--fg); font-weight: 600; }
+.bar { height: 8px; border-radius: 99px; background: var(--sunk); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--saffron); border-radius: inherit; transition: width .4s ease; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.seg { display: inline-flex; background: var(--sunk); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; font-size: .88rem; font-weight: 500; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgb(0 0 0 / .12); }
+.ghost { border: 1px solid var(--line); background: transparent; padding: 6px 12px; border-radius: 10px; font-size: .88rem; font-weight: 500; }
+.ghost:hover { background: var(--sunk); }
+
+/* The card */
+.stage { display: flex; flex-direction: column; gap: 14px; }
+.card { perspective: 1400px; border: 0; padding: 0; background: none; text-align: inherit; width: 100%; }
+.inner { display: grid; transition: transform .5s cubic-bezier(.3,.7,.2,1); transform-style: preserve-3d; }
+.card.flipped .inner { transform: rotateY(180deg); }
+.face {
+  grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: var(--surface); border-radius: 18px; box-shadow: var(--shadow);
+  padding: 40px 24px 48px; min-height: 300px; position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center;
+}
+.face::before { content: ""; position: absolute; inset: 8px; border: 1px solid var(--firoozeh-soft); border-radius: 12px; pointer-events: none; }
+.face.back { transform: rotateY(180deg); }
+.star { position: absolute; top: 18px; left: 18px; width: 18px; height: 18px; fill: var(--firoozeh); opacity: .8; }
+.face .tag { position: absolute; top: 16px; right: 20px; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.face .tag.known { color: var(--saffron); }
+.big-en { font-family: var(--f-display); font-weight: 700; font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1.15; text-wrap: balance; }
+.big-fa { font-weight: 800; font-size: clamp(2.6rem, 11vw, 3.6rem); line-height: 1.4; }
+.mid-fa { font-weight: 600; font-size: clamp(1.5rem, 6vw, 1.9rem); line-height: 1.6; }
+.mid-en { font-family: var(--f-display); font-weight: 500; font-size: clamp(1.35rem, 5vw, 1.7rem); line-height: 1.3; text-wrap: balance; }
+.tr-big { font-size: 1.15rem; }
+.stem { font-size: .85rem; color: var(--muted); }
+.stem .fa, .stem .tr { font-size: .95rem; }
+.hint { position: absolute; bottom: 16px; font-size: .78rem; color: var(--muted); }
+.example { margin-top: 10px; padding-top: 14px; border-top: 1px dashed var(--line); width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 2px; }
+.example .fa { font-size: 1.25rem; font-weight: 600; line-height: 1.7; }
+.example .en { color: var(--muted); }
+.example .label, .conj .label { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.empty-card { color: var(--muted); max-width: 320px; }
+.conj { width: 100%; max-width: 440px; margin-top: 6px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.conj-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 8px 12px; }
+.cell { display: flex; flex-direction: column; align-items: flex-start; text-align: start; background: var(--bg); border-radius: 10px; padding: 6px 10px; min-width: 0; }
+.cell .top { font-size: .85rem; display: flex; flex-wrap: wrap; gap: 0 6px; }
+.cell .pr { color: var(--muted); }
+.cell .fa { font-size: 1.15rem; font-weight: 600; line-height: 1.6; }
+.conj .note { font-size: .72rem; color: var(--muted); margin-top: 6px; }
+.form-note { font-size: .8rem; color: var(--muted); margin: 0; }
+.backup { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.backup p { flex: 1 1 260px; margin: 0; font-size: .85rem; color: var(--muted); }
+footer { font-size: .85rem; color: var(--muted); }
+footer a { color: var(--firoozeh); }
+.cell.hi { background: var(--firoozeh-soft); box-shadow: inset 0 0 0 2px var(--firoozeh); }
+.pron { display: flex; flex-direction: column; align-items: center; }
+.pr-en { color: var(--muted); font-size: .9rem; }
+.plus { color: var(--firoozeh); font-weight: 700; font-size: 1.5rem; line-height: 1; }
+.conj-fa { font-weight: 800; font-size: clamp(1.9rem, 8vw, 2.8rem); line-height: 1.5; text-wrap: balance; }
+
+.actions { display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 10px; }
+.actions button { border-radius: 12px; padding: 12px 14px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); }
+.actions .again { color: var(--anaar); }
+.actions .got { background: var(--saffron-soft); border-color: transparent; color: var(--fg); }
+.actions .got span, .actions .again span { font-weight: 400; color: var(--muted); font-size: .8rem; margin-left: 6px; }
+.actions button:disabled { opacity: .45; cursor: default; }
+.pos { text-align: center; font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.keys { text-align: center; font-size: .78rem; color: var(--muted); }
+kbd { font-family: var(--f-body); font-size: .75rem; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--surface); }
+@media (hover: none) { .keys, .actions span { display: none; } }
+
+/* Sections */
+section { display: flex; flex-direction: column; gap: 14px; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 1.3rem; margin: 0; }
+.section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.sync { font-size: .8rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.sync::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.sync[data-s="db"]::before { background: var(--firoozeh); }
+.sync[data-s="local"]::before { background: var(--saffron); }
+.sync[data-s="error"]::before { background: var(--danger); }
+
+form { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+legend { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 0; margin-bottom: 8px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; font-weight: 500; min-width: 0; }
+label .opt { color: var(--muted); font-weight: 400; }
+input[type="text"], input[type="search"] { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 11px; font-size: 1rem; }
+input.fa-in { font-family: var(--f-fa); direction: rtl; font-size: 1.1rem; }
+fieldset .wide { grid-column: 1 / -1; }
+.form-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.primary { border: 0; background: var(--firoozeh); color: var(--surface); padding: 10px 18px; border-radius: 10px; font-weight: 600; }
+.msg { font-size: .88rem; color: var(--muted); }
+.msg.err { color: var(--danger); }
+
+.list { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) auto; gap: 4px 14px; align-items: center; padding: 11px 16px; border-top: 1px solid var(--sunk); }
+.row:first-child { border-top: 0; }
+.row .en { font-weight: 500; }
+.row .meta { display: flex; flex-direction: column; min-width: 0; }
+.row .meta .fa { font-size: 1.15rem; font-weight: 600; text-align: start; }
+.row .meta .tr { font-size: .85rem; }
+.row .ops { display: flex; gap: 6px; align-items: center; }
+.chip { font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--saffron-soft); border-color: transparent; color: var(--saffron); }
+.chip.mine { border-color: transparent; background: var(--firoozeh-soft); color: var(--firoozeh); }
+.del { border: 0; background: none; color: var(--muted); font-size: .8rem; padding: 2px 4px; }
+.del.confirm { color: var(--danger); font-weight: 600; }
+.none { padding: 20px 16px; color: var(--muted); text-align: center; }
+@media (max-width: 460px) {
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .ops { grid-column: 1 / -1; }
+  .actions { grid-template-columns: 1fr 1fr; }
+  .actions .nav { order: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .inner, .bar i { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Persian Verb Cards <span class="fa">فعل‌ها</span></h1>
+      <p class="sub">24 everyday verbs in spoken Tehrani, each with its present tense for every pronoun and a sentence you'd actually say.</p>
+    </div>
+    <div class="meter" aria-live="polite">
+      <div class="meter-label"><span id="meterLabel">Verbs known</span><span><b id="knownN">0</b> / <span id="totalN">24</span></span></div>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Card type">
+        <button id="m-verb" data-mode="verb" aria-pressed="true">Verb</button>
+        <button id="m-sent" data-mode="sentence" aria-pressed="false">Sentence</button>
+        <button id="m-conj" data-mode="conj" aria-pressed="false">Conjugate</button>
+      </div>
+      <div class="seg" role="group" aria-label="Direction">
+        <button id="d-en" data-dir="en" aria-pressed="true">English first</button>
+        <button id="d-fa" data-dir="fa" aria-pressed="false">Persian first</button>
+      </div>
+      <div class="seg" role="group" aria-label="Which cards">
+        <button id="f-all" data-filter="all" aria-pressed="true">All</button>
+        <button id="f-learn" data-filter="learning" aria-pressed="false">Still learning</button>
+      </div>
+      <button class="ghost" id="shuffle">Shuffle</button>
+    </div>
+
+    <button class="card" id="card" aria-label="Flashcard. Press to flip.">
+      <div class="inner">
+        <div class="face front" id="front"></div>
+        <div class="face back" id="back"></div>
+      </div>
+    </button>
+
+    <div class="actions">
+      <button class="nav" id="prev" aria-label="Previous card">←</button>
+      <button class="again" id="again">Still learning<span>1</span></button>
+      <button class="got" id="got">Got it<span>2</span></button>
+      <button class="nav" id="next" aria-label="Next card">→</button>
+    </div>
+    <div class="pos" id="pos"></div>
+    <div class="keys"><kbd>Space</kbd> flip · <kbd>←</kbd> <kbd>→</kbd> move · <kbd>1</kbd> still learning · <kbd>2</kbd> got it</div>
+  </div>
+
+  <section aria-labelledby="add-h">
+    <div class="section-head">
+      <h2 id="add-h">Add a verb</h2>
+      <span class="sync" data-s="local">Saved in this browser</span>
+    </div>
+    <form id="addForm" autocomplete="off">
+      <fieldset>
+        <legend>The verb, as you'd say it</legend>
+        <label for="in-en">English<input type="text" id="in-en" placeholder="to cook" required></label>
+        <label for="in-fa">Persian<input type="text" id="in-fa" class="fa-in" placeholder="پختن" required></label>
+        <label for="in-tr">Transliteration<input type="text" id="in-tr" placeholder="pokhtan" required></label>
+        <label for="in-stem">Spoken present stem <span class="opt">(optional)</span><input type="text" id="in-stem" placeholder="paz"></label>
+        <label for="in-fastem">Present stem in Persian <span class="opt">(optional)</span><input type="text" id="in-fastem" class="fa-in" placeholder="پز"></label>
+        <p class="form-note wide">Give a stem and the card shows the present tense for each pronoun, built the regular way: mi- + stem + ending (mipazam, mipazi, mipaze…). Irregular verbs may need checking.</p>
+      </fieldset>
+      <fieldset>
+        <legend>A spoken sentence that uses it</legend>
+        <label for="in-sfa" class="wide">Persian<input type="text" id="in-sfa" class="fa-in" placeholder="مامانم شام پخت."></label>
+        <label for="in-str">Transliteration<input type="text" id="in-str" placeholder="Maamaanam shaam pokht."></label>
+        <label for="in-sen">English<input type="text" id="in-sen" placeholder="My mum cooked dinner."></label>
+      </fieldset>
+      <div class="form-foot">
+        <button type="submit" class="primary" id="addBtn">Add card</button>
+        <span class="msg" id="formMsg" role="status"></span>
+      </div>
+    </form>
+  </section>
+
+  <section aria-labelledby="all-h">
+    <div class="section-head">
+      <h2 id="all-h">All verbs</h2>
+      <input type="search" id="search" placeholder="Search English, Persian or transliteration" aria-label="Search verbs" style="max-width: 300px">
+    </div>
+    <div class="list" id="list"></div>
+    <div class="backup">
+      <p>Your cards and progress are saved in this browser only. Clearing site data deletes them, so export a backup now and then. Import it on another device to carry on there.</p>
+      <button class="ghost" id="exportBtn">Export backup</button>
+      <button class="ghost" id="importBtn">Import backup</button>
+      <input type="file" id="importIn" accept="application/json,.json" hidden>
+    </div>
+    <span class="msg" id="backupMsg" role="status"></span>
+  </section>
+
+  <footer>Made by <a href="https://github.com/alirghase">alirghase</a> while learning Persian. <a href="https://github.com/alirghase/persian-verb-cards">Code on GitHub</a>.</footer>
+</div>
+
+<script>
+const BUILTIN = [
+  ["boodan","to be","بودن","boodan","baash","دیروز خونه بودم.","Dirooz khoone boodam.","Yesterday I was at home."],
+  ["daashtan","to have","داشتن","daashtan","daar","یه داداش دارم.","Ye daadaash daaram.","I have a brother."],
+  ["doost-daashtan","to like / love","دوست داشتن","doost daashtan","doost daar","من چایی خیلی دوست دارم.","Man chaayi kheyli doost daaram.","I really like tea."],
+  ["kardan","to do","کردن","kardan","kon","چی کار می‌کنی؟","Chi kaar mikoni?","What are you doing?"],
+  ["raftan","to go","رفتن","raftan","r","فردا می‌رم سر کار.","Fardaa miram sar-e kaar.","Tomorrow I'm going to work."],
+  ["didan","to see","دیدن","didan","bin","دیشب یه فیلم دیدم.","Dishab ye film didam.","Last night I watched a film."],
+  ["khordan","to eat","خوردن","khordan","khor","صبحونه خوردی؟","Sobhoone khordi?","Have you had breakfast?"],
+  ["khaabidan","to sleep","خوابیدن","khaabidan","khaab","دیشب دیر خوابیدم.","Dishab dir khaabidam.","I went to sleep late last night."],
+  ["goftan","to say / tell","گفتن","goftan","g","چی گفتی؟","Chi gofti?","What did you say?"],
+  ["kharidan","to buy","خریدن","kharidan","khar","یه کتاب خریدم.","Ye ketaab kharidam.","I bought a book."],
+  ["omadan","to come","اومدن","omadan","yaa","کی میای؟","Kei miyaay?","When are you coming?"],
+  ["khoondan","to read","خوندن","khoondan","khoon","هر شب کتاب می‌خونم.","Har shab ketaab mikhoonam.","I read every night."],
+  ["doonestan","to know","دونستن","doonestan","doon","جوابشو نمی‌دونم.","Javaabesho nemidoonam.","I don't know the answer."],
+  ["shostan","to wash","شستن","shostan","shoor","دستاتو بشور.","Dastaato beshoor.","Wash your hands."],
+  ["fahmidan","to understand","فهمیدن","fahmidan","fahm","نفهمیدم، دوباره بگو.","Nafahmidam, dobaare begoo.","I didn't understand, say it again."],
+  ["moondan","to stay","موندن","moondan","moon","امشب خونه می‌مونم.","Emshab khoone mimoonam.","I'm staying home tonight."],
+  ["gozaashtan","to put","گذاشتن","gozaashtan","zaar","کلیدو گذاشتم رو میز.","Kelido gozaashtam roo miz.","I put the key on the table."],
+  ["neveshtan","to write","نوشتن","neveshtan","nevis","اسمتو اینجا بنویس.","Esmeto injaa benevis.","Write your name here."],
+  ["neshastan","to sit","نشستن","neshastan","shin","بفرمایین بشینین.","Befarmaayin beshinin.","Please, sit down."],
+  ["bordan","to take / win","بردن","bordan","bar","چترتو ببر، بارون میاد.","Chatreto bebar, baaroon miyaad.","Take your umbrella, it's raining."],
+  ["avordan","to bring","آوردن","avordan","yaar","آب آوردی؟","Aab aavordi?","Did you bring water?"],
+  ["baakhtan","to lose","باختن","baakhtan","baaz","دیروز تیممون باخت.","Dirooz timemoon baakht.","Our team lost yesterday."],
+  ["forookhtan","to sell","فروختن","forookhtan","foroosh","ماشینمو فروختم.","Maashinamo forookhtam.","I sold my car."],
+  ["bastan","to close","بستن","bastan","band","درو ببند لطفاً.","Daro beband lotfan.","Close the door, please."],
+].map(([id, en, fa, tr, stem, sfa, str, sen]) => ({ id: "b-" + id, en, fa, tr, stem, sfa, str, sen }));
+
+// Present tense, spoken Tehrani: mi- + present stem + personal ending.
+const PRON = [["من", "man", "I"], ["تو", "to", "you"], ["اون", "oon", "he / she"], ["ما", "maa", "we"], ["شما", "shomaa", "you all / polite you"], ["اونا", "oonaa", "they"]];
+const END_TR = ["am", "i", "e", "im", "in", "an"];
+const END_FA = ["م", "ی", "ه", "یم", "ین", "ن"];
+const reg = (tr, fa, trPre = "mi", faPre = "می‌") => END_TR.map((e, i) => [fa ? faPre + fa + END_FA[i] : "", trPre + tr + e]);
+const CONJ = {
+  "b-boodan": [["هستم", "hastam"], ["هستی", "hasti"], ["هست", "hast"], ["هستیم", "hastim"], ["هستین", "hastin"], ["هستن", "hastan"]],
+  "b-daashtan": reg("daar", "دار", "", ""),
+  "b-doost-daashtan": reg("daar", "دوست دار", "doost ", ""),
+  "b-kardan": reg("kon", "کن"),
+  "b-raftan": reg("r", "ر"),
+  "b-didan": reg("bin", "بین"),
+  "b-khordan": reg("khor", "خور"),
+  "b-khaabidan": reg("khaab", "خواب"),
+  "b-goftan": reg("g", "گ"),
+  "b-kharidan": reg("khar", "خر"),
+  "b-omadan": [["میام", "miyaam"], ["میای", "miyaay"], ["میاد", "miyaad"], ["میایم", "miyaaym"], ["میاین", "miyaayn"], ["میان", "miyaan"]],
+  "b-khoondan": reg("khoon", "خون"),
+  "b-doonestan": reg("doon", "دون"),
+  "b-shostan": reg("shoor", "شور"),
+  "b-fahmidan": reg("fahm", "فهم"),
+  "b-moondan": reg("moon", "مون"),
+  "b-gozaashtan": reg("zaar", "ذار"),
+  "b-neveshtan": reg("nevis", "نویس"),
+  "b-neshastan": reg("shin", "شین"),
+  "b-bordan": reg("bar", "بر"),
+  "b-avordan": reg("yaar", "ار", "mi", "می"),
+  "b-baakhtan": reg("baaz", "باز"),
+  "b-forookhtan": reg("foroosh", "فروش"),
+  "b-bastan": reg("band", "بند"),
+};
+const conjOf = (c) => CONJ[c.id] || (c.custom && c.stem ? reg(c.stem.trim(), (c.faStem || "").trim()) : null);
+function conjTable(c, hi = -1) {
+  const k = conjOf(c);
+  if (!k) return "";
+  const cells = k.map(([fa, tr], i) => `<div class="cell${i === hi ? " hi" : ""}"><div class="top"><span class="pr">${PRON[i][1]}</span><span class="tr">${esc(tr)}</span></div>${fa ? `<span class="fa" lang="fa">${esc(PRON[i][0])} ${esc(fa)}</span>` : ""}</div>`).join("");
+  const note = c.id === "b-boodan" ? '<div class="note">For "is", people mostly just add -e or -st: khoobe (it’s good), khoonast (she’s home).</div>' : c.custom ? '<div class="note">Built with the regular pattern.</div>' : "";
+  return `<div class="conj"><div class="label">Present tense · spoken</div><div class="conj-grid">${cells}</div>${note}</div>`;
+}
+
+const $ = (id) => document.getElementById(id);
+const LS = "pvc:";
+function lsGet(k, d) { try { const v = localStorage.getItem(LS + k); return v ? JSON.parse(v) : d; } catch { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); return true; } catch { return false; } }
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+const state = {
+  custom: lsGet("custom", []),
+  known: new Set(lsGet("known", [])),
+  conjKnown: new Set(lsGet("conjKnown", [])), // "<verb id>|<pronoun index>"
+  mode: lsGet("mode", "verb"),
+  dir: lsGet("dir", "en"),
+  filter: lsGet("filter", "all"),
+  order: [], pos: 0, flipped: false, query: "", pendingDelete: null, pron: 0, pronFor: null,
+};
+
+const all = () => [...BUILTIN, ...state.custom];
+const byId = (id) => all().find(c => c.id === id);
+const conjKey = (id, i) => id + "|" + i;
+const formsLeft = (c) => [0, 1, 2, 3, 4, 5].filter(i => !state.conjKnown.has(conjKey(c.id, i)));
+const visible = () => all().filter(c => state.mode === "conj"
+  ? conjOf(c) && (state.filter === "all" || formsLeft(c).length)
+  : state.filter === "all" || !state.known.has(c.id));
+
+function syncOrder() {
+  const ids = visible().map(c => c.id);
+  const keep = new Set(ids);
+  state.order = state.order.filter(id => keep.has(id));
+  for (const id of ids) if (!state.order.includes(id)) state.order.push(id);
+  if (state.pos >= state.order.length) state.pos = 0;
+}
+
+const STAR = '<svg class="star" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="4" width="12" height="12"/><rect x="4" y="4" width="12" height="12" transform="rotate(45 10 10)"/></svg>';
+
+function conjFaces(c) {
+  const k = conjOf(c), i = state.pron, [pfa, ptr, pen] = PRON[i];
+  const tag = state.conjKnown.has(conjKey(c.id, i)) ? '<span class="tag known">Known</span>' : `<span class="tag">${6 - formsLeft(c).length}/6 forms</span>`;
+  const verb = state.dir === "en" ? `<div class="mid-en">${esc(c.en)}</div>` : `<div class="fa mid-fa" lang="fa">${esc(c.fa)}</div>`;
+  const who = state.dir === "en" ? `<span class="tr tr-big">${ptr}</span><span class="pr-en">${pen}</span>` : "";
+  const front = `<div class="pron"><span class="fa big-fa" lang="fa">${pfa}</span>${who}</div><div class="plus" aria-hidden="true">+</div>${verb}<span class="hint">Say it out loud, then tap to check</span>`;
+  const back = `<div class="fa conj-fa" lang="fa">${pfa} ${esc(k[i][0])}</div><div class="tr tr-big">${ptr} ${esc(k[i][1])}</div><div class="stem">${esc(pen)} + ${esc(c.en)}</div>${conjTable(c, i)}`;
+  return [STAR + tag + front, STAR + tag + back];
+}
+
+function faces(c) {
+  if (state.mode === "conj") return conjFaces(c);
+  const hasSent = !!(c.sfa && c.sen);
+  const mode = state.mode === "sentence" && hasSent ? "sentence" : "verb";
+  const tag = state.known.has(c.id) ? '<span class="tag known">Known</span>' : (c.custom ? '<span class="tag">Yours</span>' : "");
+  const stem = c.stem ? `<div class="stem">present stem <span class="tr">${esc(c.stem)}</span></div>` : "";
+  const example = hasSent ? `<div class="example"><div class="label">Example</div><div class="fa" lang="fa">${esc(c.sfa)}</div>${c.str ? `<div class="tr">${esc(c.str)}</div>` : ""}<div class="en">${esc(c.sen)}</div></div>` : "";
+  const hint = '<span class="hint">Tap to flip</span>';
+  const noSent = state.mode === "sentence" && !hasSent ? '<span class="hint">No sentence for this verb yet</span>' : hint;
+  if (mode === "verb") {
+    const faHead = `<div class="fa big-fa" lang="fa">${esc(c.fa)}</div>`;
+    const enHead = `<div class="big-en">${esc(c.en)}</div>`;
+    const front = state.dir === "en" ? enHead : faHead;
+    const back = state.dir === "en"
+      ? `${faHead}<div class="tr tr-big">${esc(c.tr)}</div>${stem}${conjTable(c)}${example}`
+      : `${enHead}<div class="tr tr-big">${esc(c.tr)}</div>${stem}${conjTable(c)}${example}`;
+    return [STAR + tag + front + noSent, STAR + tag + back];
+  }
+  const verbLine = `<div class="stem"><span class="fa" lang="fa">${esc(c.fa)}</span> · <span class="tr">${esc(c.tr)}</span> · ${esc(c.en)}</div>`;
+  const front = state.dir === "en" ? `<div class="mid-en">${esc(c.sen)}</div>` : `<div class="fa mid-fa" lang="fa">${esc(c.sfa)}</div>`;
+  const back = state.dir === "en"
+    ? `<div class="fa mid-fa" lang="fa">${esc(c.sfa)}</div>${c.str ? `<div class="tr">${esc(c.str)}</div>` : ""}${verbLine}`
+    : `<div class="mid-en">${esc(c.sen)}</div>${c.str ? `<div class="tr">${esc(c.str)}</div>` : ""}${verbLine}`;
+  return [STAR + tag + front + hint, STAR + tag + back];
+}
+
+function renderCard() {
+  syncOrder();
+  const c = byId(state.order[state.pos]);
+  if (c && state.mode === "conj" && state.pronFor !== c.id) {
+    const opts = state.filter === "learning" ? formsLeft(c) : [0, 1, 2, 3, 4, 5];
+    state.pron = opts[Math.floor(Math.random() * opts.length)] ?? 0;
+    state.pronFor = c.id;
+  }
+  const card = $("card");
+  card.classList.toggle("flipped", state.flipped);
+  if (!c) {
+    const msg = state.filter === "learning"
+      ? '<div class="big-en">All known</div><p class="empty-card">Every card is marked as known. Switch to <b>All</b> to keep reviewing.</p>'
+      : '<p class="empty-card">No cards yet. Add one below.</p>';
+    $("front").innerHTML = STAR + msg; $("back").innerHTML = STAR + msg;
+    $("pos").textContent = "";
+  } else {
+    const [f, b] = faces(c);
+    $("front").innerHTML = f; $("back").innerHTML = b;
+    $("pos").textContent = `Card ${state.pos + 1} of ${state.order.length}`;
+  }
+  for (const id of ["prev", "next", "again", "got"]) $(id).disabled = !c;
+  const cc = all().filter(conjOf);
+  const [kn, tot] = state.mode === "conj"
+    ? [cc.reduce((n, x) => n + 6 - formsLeft(x).length, 0), cc.length * 6]
+    : [all().filter(x => state.known.has(x.id)).length, all().length];
+  $("meterLabel").textContent = state.mode === "conj" ? "Forms known" : "Verbs known";
+  $("knownN").textContent = kn;
+  $("totalN").textContent = tot;
+  $("barFill").style.width = (tot ? 100 * kn / tot : 0) + "%";
+  for (const b of document.querySelectorAll("[data-mode]")) b.setAttribute("aria-pressed", b.dataset.mode === state.mode);
+  for (const b of document.querySelectorAll("[data-dir]")) b.setAttribute("aria-pressed", b.dataset.dir === state.dir);
+  for (const b of document.querySelectorAll("[data-filter]")) b.setAttribute("aria-pressed", b.dataset.filter === state.filter);
+}
+
+function renderList() {
+  const q = state.query.trim().toLowerCase();
+  const rows = all().filter(c => !q || [c.en, c.fa, c.tr, c.sen, c.sfa].some(v => String(v || "").toLowerCase().includes(q)));
+  if (!rows.length) { $("list").innerHTML = '<div class="none">No verbs match that search.</div>'; return; }
+  $("list").innerHTML = rows.map(c => `
+    <div class="row">
+      <div class="en">${esc(c.en)}</div>
+      <div class="meta"><span class="fa" lang="fa">${esc(c.fa)}</span><span class="tr">${esc(c.tr)}</span></div>
+      <div class="ops">
+        ${c.custom ? '<span class="chip mine">Yours</span>' : ""}
+        ${conjOf(c) ? `<span class="chip">${6 - formsLeft(c).length}/6 forms</span>` : ""}
+        <button class="chip" data-known="${esc(c.id)}" aria-pressed="${state.known.has(c.id)}">${state.known.has(c.id) ? "Known" : "Learning"}</button>
+        ${c.custom ? `<button class="del${state.pendingDelete === c.id ? " confirm" : ""}" data-del="${esc(c.id)}">${state.pendingDelete === c.id ? "Confirm delete" : "Delete"}</button>` : ""}
+      </div>
+    </div>`).join("");
+}
+
+function render() { renderCard(); renderList(); }
+
+// ---- saving (this browser only) ----
+function saveKnown() { lsSet("known", [...state.known]); lsSet("conjKnown", [...state.conjKnown]); }
+const plain = (c) => { const { custom, ...rest } = c; return rest; };
+function saveCustom() { return lsSet("custom", state.custom.map(plain)); }
+function setKnown(id, on) {
+  on ? state.known.add(id) : state.known.delete(id);
+  saveKnown();
+}
+function setForm(id, i, on) {
+  on ? state.conjKnown.add(conjKey(id, i)) : state.conjKnown.delete(conjKey(id, i));
+  saveKnown();
+}
+
+// ---- interactions ----
+function flip() { if (!state.order.length) return; state.flipped = !state.flipped; $("card").classList.toggle("flipped", state.flipped); }
+function move(d) {
+  if (!state.order.length) return;
+  state.pos = (state.pos + d + state.order.length) % state.order.length;
+  state.flipped = false; state.pronFor = null; renderCard();
+}
+function mark(on) {
+  const id = state.order[state.pos];
+  if (!id) return;
+  if (state.mode === "conj") setForm(id, state.pron, on); else setKnown(id, on);
+  state.flipped = false; state.pronFor = null;
+  const leaves = state.filter === "learning" && !visible().some(x => x.id === id);
+  if (!leaves) state.pos = (state.pos + 1) % Math.max(1, state.order.length);
+  render();
+}
+
+$("card").addEventListener("click", flip);
+$("prev").addEventListener("click", () => move(-1));
+$("next").addEventListener("click", () => move(1));
+$("again").addEventListener("click", () => mark(false));
+$("got").addEventListener("click", () => mark(true));
+$("shuffle").addEventListener("click", () => {
+  for (let i = state.order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [state.order[i], state.order[j]] = [state.order[j], state.order[i]]; }
+  state.pos = 0; state.flipped = false; state.pronFor = null; renderCard();
+});
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => { state.mode = b.dataset.mode; lsSet("mode", state.mode); state.flipped = false; state.pronFor = null; renderCard(); }));
+document.querySelectorAll("[data-dir]").forEach(b => b.addEventListener("click", () => { state.dir = b.dataset.dir; lsSet("dir", state.dir); state.flipped = false; renderCard(); }));
+document.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => { state.filter = b.dataset.filter; lsSet("filter", state.filter); state.pos = 0; state.flipped = false; renderCard(); }));
+
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea, select") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === " " || e.key === "Enter") { if (e.target.closest("button")) return; e.preventDefault(); flip(); }
+  else if (e.key === "ArrowRight") move(1);
+  else if (e.key === "ArrowLeft") move(-1);
+  else if (e.key === "1") mark(false);
+  else if (e.key === "2") mark(true);
+});
+
+$("search").addEventListener("input", e => { state.query = e.target.value; renderList(); });
+$("list").addEventListener("click", e => {
+  const k = e.target.closest("[data-known]");
+  if (k) { setKnown(k.dataset.known, !state.known.has(k.dataset.known)); render(); return; }
+  const d = e.target.closest("[data-del]");
+  if (!d) return;
+  const id = d.dataset.del;
+  if (state.pendingDelete !== id) { state.pendingDelete = id; renderList(); return; }
+  state.pendingDelete = null;
+  state.custom = state.custom.filter(c => c.id !== id);
+  for (let i = 0; i < 6; i++) state.conjKnown.delete(conjKey(id, i));
+  setKnown(id, false);
+  saveCustom();
+  render();
+});
+
+$("addForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = (id) => $(id).value.trim();
+  const msg = $("formMsg");
+  const c = { id: "c-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), en: v("in-en"), fa: v("in-fa"), tr: v("in-tr"), stem: v("in-stem"), faStem: v("in-fastem"), sfa: v("in-sfa"), str: v("in-str"), sen: v("in-sen"), created: Date.now() };
+  if ((c.sfa && !c.sen) || (!c.sfa && c.sen)) { msg.className = "msg err"; msg.textContent = "Add the sentence in both Persian and English, or leave both empty."; return; }
+  $("addBtn").disabled = true;
+  try {
+    state.custom.push({ ...c, custom: true });
+    if (!saveCustom()) { state.custom.pop(); throw new Error("storage"); }
+    e.target.reset();
+    msg.className = "msg"; msg.textContent = `Added “${c.en}”. It's in the deck now.`;
+    render();
+  } catch (err) {
+    msg.className = "msg err";
+    msg.textContent = "Couldn't save that card. This browser is blocking storage (a private window does this), or it's full.";
+  }
+  $("addBtn").disabled = false;
+});
+
+state.custom = state.custom.map(c => ({ ...c, custom: true }));
+$("exportBtn").addEventListener("click", () => {
+  const data = { app: "persian-verb-cards", version: 1, exported: new Date().toISOString(), custom: state.custom.map(plain), known: [...state.known], conjKnown: [...state.conjKnown] };
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+  a.download = `persian-verb-cards-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $("backupMsg").textContent = "Backup saved to your downloads.";
+});
+$("importBtn").addEventListener("click", () => $("importIn").click());
+$("importIn").addEventListener("change", async e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (d.app !== "persian-verb-cards") throw new Error("not a backup");
+    const ids = new Set(state.custom.map(c => c.id));
+    let added = 0;
+    for (const c of d.custom || []) if (c?.id && c.en && c.fa && !ids.has(c.id)) { state.custom.push({ ...c, custom: true }); added++; }
+    for (const k of d.known || []) state.known.add(k);
+    for (const k of d.conjKnown || []) state.conjKnown.add(k);
+    saveCustom(); saveKnown(); render();
+    $("backupMsg").textContent = `Backup imported: ${added} new card${added === 1 ? "" : "s"}, progress merged.`;
+  } catch {
+    $("backupMsg").textContent = "That file isn't a Persian Verb Cards backup.";
+  }
+  e.target.value = "";
+});
+
+render();
+</script>
+</body>
+</html>
